@@ -85,6 +85,7 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
         }
 
         #pragma ivdep
+        #pragma vector aligned
         for (; tid < lastId; ++tid) {
             NodeData *data = &Vdata[tid];
             if (data->send) {
@@ -125,6 +126,7 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
         tid = omp_get_thread_num() * iter;
 
         #pragma ivdep
+        #pragma vector aligned
         for (; tid < lastId; ++tid) {
             NodeData *data = &Vdata[tid];
             if (data->send) {
