@@ -22,11 +22,18 @@
 #include <omp.h>
 #include <sys/time.h>
 
-//#define _DEBUG
+#define _DEBUG
 #define ALLOC alloc_if(1)
 #define REUSE alloc_if(0)
 #define FREE free_if(1)
 #define RETAIN free_if(0)
+
+static void checkMemAlloc(int result) {
+    if (result != 0) {
+        std::cout << "Memory allocation error" << std::endl;
+        std::cerr << "Memory allocation error" << std::endl;
+    }
+}
 
 extern double elapsedTime(void) {
     struct timeval t;
@@ -211,9 +218,9 @@ int main(int argc, char* argv[]) {
     std::cin >> N;
 
     // N+1 - space for one extra element at the end (for easiest iteration through graph)
-    posix_memalign((void**)V, 64, (N+1) * sizeof(int));
+    checkMemAlloc(posix_memalign((void**)V, 64, (N+1) * sizeof(int)));
 
-    posix_memalign((void**)Vdata, 64, N * sizeof(NodeData));
+    checkMemAlloc(posix_memalign((void**)Vdata, 64, N * sizeof(NodeData)));
 
     for (int i = 0; i < N; ++i) {
         std::cin >> v_h >> G_0 >> G_max >> v_d;
@@ -229,13 +236,17 @@ int main(int argc, char* argv[]) {
     //
     std::cin >> Elen;
 
-    posix_memalign((void**)&E, 64, Elen * sizeof(int));
+    checkMemAlloc(posix_memalign((void**)&E, 64, Elen * sizeof(int)));
 
 //    M = (int*) calloc(Elen, sizeof(int));	// zero-initialized
-    posix_memalign((void**)M, 64, Elen * sizeof(int));
+    checkMemAlloc(posix_memalign((void**)M, 64, Elen * sizeof(int)));
     for (int i = 0; i < Elen; ++i) {
         M[i] = 0;
     }
+
+#ifdef _DEBUG
+    std::cout << "\nAfter mem allocs.\n" << std::endl;
+#endif
 
     V[0] = 0;
     {
