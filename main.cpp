@@ -77,8 +77,6 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
             lastId = N;
         }
 
-//        #pragma ivdep
-//        #pragma vector aligned
         for (; tid < lastId; ++tid) {
             NodeData *data = &Vdata[tid];
             if (data->send) {
@@ -91,8 +89,6 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
             int end = V[tid + 1];
             int msg;
 
-//            #pragma ivdep
-//            #pragma vector aligned
             // reading messages
             for (int i = start; i < end; ++i) {
                 msg = M[i];
@@ -119,8 +115,6 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
 
         tid = omp_get_thread_num() * iter;
 
-//        #pragma ivdep
-//        #pragma vector aligned
         for (; tid < lastId; ++tid) {
             NodeData *data = &Vdata[tid];
             if (data->send) {
@@ -136,14 +130,10 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
                 data->send = true;
                 lastTime = data->last_t + t_p + t_c;
 
-//                #pragma ivdep
-//                #pragma vector aligned
                 for (int i = start; i < end; ++i) {
                     v = E[i];
                     start2 = V[v];
                     end2 = V[v + 1];
-//                    #pragma ivdep
-//                    #pragma vector aligned
                     for (int j = start2; j < end2; ++j) {
                         if (E[j] == tid) {
                             M[j] = lastTime;
