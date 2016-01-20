@@ -140,12 +140,22 @@ if __name__ == "__main__":
             "id": "G1",
             "name": "Test G. Execution time vs size of input data and number of threads",
             "cmd": {
-                "t": (60, 120, 240, 300, 360, 420, 480, 720, 960),
+                "t": (59, 118, 177, 236),
                 "d": (0,),
-                "v": (0, 1),
-                "test": ('10', '100', '10b', '100b')
+                "v": (1, 2),
+                "test": ('100b', '1000b', '10000b')
             }
         },
+        #"G-part2": {
+        #    "id": "G1",
+        #    "name": "Test G. Execution time vs size of input data and number of threads",
+        #    "cmd": {
+        #        "t": (59, 118, 177, 236),
+        #        "d": (0,),
+        #        "v": (3,),
+        #        "test": ('100b', '1000b', '10000b')
+        #    }
+        #},
     }
 
     run(specs)

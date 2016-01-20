@@ -34,7 +34,7 @@ def generate_csv(path, args, column_id=0):
         for j in range(0, number_of_columns):
             print('[debug] ' + delimiter.join([str(x) for x in time_list[i]]))
 
-            content += '{:.2f}'.format(time_list[i][p])   # .replace('.', ',')
+            content += '{0:.2f}'.format(time_list[i][p])   # .replace('.', ',')
             if j != number_of_columns - 1:
                 content += delimiter
             i += 1
