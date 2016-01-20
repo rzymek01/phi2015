@@ -142,6 +142,8 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
                     v = E[i];
                     start2 = V[v];
                     end2 = V[v + 1];
+                    #pragma ivdep
+                    #pragma vector aligned
                     for (int j = start2; j < end2; ++j) {
                         if (E[j] == tid) {
                             M[j] = lastTime;
