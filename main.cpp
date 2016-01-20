@@ -147,10 +147,10 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
 }
 
 // those must be globals due to nocopy
-int threads;
-int N;
-int t_c;
-int t_p;
+extern __attribute__((target(mic))) int threads;
+extern __attribute__((target(mic))) int N;
+extern __attribute__((target(mic))) int t_c;
+extern __attribute__((target(mic))) int t_p;
 
 int main(int argc, char* argv[]) {
 
