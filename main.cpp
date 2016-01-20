@@ -77,8 +77,8 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
             lastId = N;
         }
 
-        #pragma ivdep
-        #pragma vector aligned
+//        #pragma ivdep
+//        #pragma vector aligned
         for (; tid < lastId; ++tid) {
             NodeData *data = &Vdata[tid];
             if (data->send) {
@@ -91,8 +91,8 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
             int end = V[tid + 1];
             int msg;
 
-            #pragma ivdep
-            #pragma vector aligned
+//            #pragma ivdep
+//            #pragma vector aligned
             // reading messages
             for (int i = start; i < end; ++i) {
                 msg = M[i];
@@ -119,8 +119,8 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
 
         tid = omp_get_thread_num() * iter;
 
-        #pragma ivdep
-        #pragma vector aligned
+//        #pragma ivdep
+//        #pragma vector aligned
         for (; tid < lastId; ++tid) {
             NodeData *data = &Vdata[tid];
             if (data->send) {
@@ -136,14 +136,14 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
                 data->send = true;
                 lastTime = data->last_t + t_p + t_c;
 
-                #pragma ivdep
-                #pragma vector aligned
+//                #pragma ivdep
+//                #pragma vector aligned
                 for (int i = start; i < end; ++i) {
                     v = E[i];
                     start2 = V[v];
                     end2 = V[v + 1];
-                    #pragma ivdep
-                    #pragma vector aligned
+//                    #pragma ivdep
+//                    #pragma vector aligned
                     for (int j = start2; j < end2; ++j) {
                         if (E[j] == tid) {
                             M[j] = lastTime;
@@ -208,10 +208,10 @@ int main(int argc, char* argv[]) {
         v_r = 1,		// registration potential (0, +inf)
         v_d = 1;		// decision-making potential (0, +inf)
 
-    int *V, *dev_V,
-        *E, *dev_E,
-        *M, *dev_M;
-    NodeData *Vdata, *dev_Vdata;
+    int *V,
+        *E,
+        *M;
+    NodeData *Vdata;
 
 #ifdef _DEBUG
     std::cout << "/*\nProgram started." << std::endl;
@@ -221,9 +221,9 @@ int main(int argc, char* argv[]) {
     std::cin >> N;
 
     // N+1 - space for one extra element at the end (for easiest iteration through graph)
-    V = (int*) malloc((N+1) * sizeof(int));
+    posix_memalign((void**)V, 64, (N+1) * sizeof(int));
 
-    Vdata = (NodeData*) malloc(N * sizeof(NodeData));
+    posix_memalign((void**)Vdata, 64, N * sizeof(NodeData));
 
     for (int i = 0; i < N; ++i) {
         std::cin >> v_h >> G_0 >> G_max >> v_d;
@@ -239,9 +239,13 @@ int main(int argc, char* argv[]) {
     //
     std::cin >> Elen;
 
-    E = (int*) malloc(Elen * sizeof(int));
+    posix_memalign((void**)&E, 64, Elen * sizeof(int));
 
-    M = (int*) calloc(Elen, sizeof(int));	// zero-initialized
+//    M = (int*) calloc(Elen, sizeof(int));	// zero-initialized
+    posix_memalign((void**)M, 64, Elen * sizeof(int));
+    for (int i = 0; i < Elen; ++i) {
+        M[i] = 0;
+    }
 
     V[0] = 0;
     {
@@ -308,7 +312,8 @@ int main(int argc, char* argv[]) {
         recv(N, V, Vdata, Elen, E, M, t_c, t_p, threads);
     }
 
-    for (int t = 1 + t_c + t_p; t < t_s; t += t_c + t_p) {
+    int t_end = t_s - t_c + t_p;
+    for (int t = 1 + t_c + t_p; t <= t_end; t += t_c + t_p) {
         #pragma offload target(mic) \
             nocopy(N, t_c, t_p, threads: REUSE RETAIN) \
             nocopy(V:length(N+1) REUSE RETAIN) \
