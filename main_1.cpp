@@ -77,8 +77,6 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
             lastId = N;
         }
 
-        #pragma ivdep
-        #pragma vector aligned
         for (; tid < lastId; ++tid) {
             NodeData *data = &Vdata[tid];
             if (data->send) {
@@ -91,8 +89,6 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
             int end = V[tid + 1];
             int msg;
 
-            #pragma ivdep
-            #pragma vector aligned
             // reading messages
             for (int i = start; i < end; ++i) {
                 msg = M[i];
@@ -119,8 +115,6 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
 
         tid = omp_get_thread_num() * iter;
 
-        #pragma ivdep
-        #pragma vector aligned
         for (; tid < lastId; ++tid) {
             NodeData *data = &Vdata[tid];
             if (data->send) {
@@ -136,8 +130,6 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
                 data->send = true;
                 lastTime = data->last_t + t_p + t_c;
 
-                #pragma ivdep
-                #pragma vector aligned
                 for (int i = start; i < end; ++i) {
                     v = E[i];
                     start2 = V[v];
@@ -298,10 +290,10 @@ int main(int argc, char* argv[]) {
 
     #pragma offload target(mic) \
             in(N, t_c, t_p, threads: ALLOC RETAIN) \
-            in(V:length(N+1) ALLOC RETAIN) \
-            in(E:length(Elen) ALLOC RETAIN) \
-            in(Vdata:length(N) ALLOC RETAIN) \
-            in(M:length(Elen) ALLOC RETAIN)
+            in(V:length(N+1) align(64) ALLOC RETAIN) \
+            in(E:length(Elen) align(64) ALLOC RETAIN) \
+            in(Vdata:length(N) align(64) ALLOC RETAIN) \
+            in(M:length(Elen) align(64) ALLOC RETAIN)
     {
         recv(N, V, Vdata, Elen, E, M, t_c, t_p, threads);
     }
