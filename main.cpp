@@ -22,7 +22,7 @@
 #include <omp.h>
 #include <sys/time.h>
 
-#define _DEBUG
+//#define _DEBUG
 #define ALLOC alloc_if(1)
 #define REUSE alloc_if(0)
 #define FREE free_if(1)
@@ -84,6 +84,7 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
             lastId = N;
         }
 
+        #pragma ivdep
         for (; tid < lastId; ++tid) {
             NodeData *data = &Vdata[tid];
             if (data->send) {
@@ -97,6 +98,7 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
             int msg;
 
             // reading messages
+            #pragma ivdep
             for (int i = start; i < end; ++i) {
                 msg = M[i];
 
@@ -122,6 +124,7 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
 
         tid = omp_get_thread_num() * iter;
 
+        #pragma ivdep
         for (; tid < lastId; ++tid) {
             NodeData *data = &Vdata[tid];
             if (data->send) {
@@ -137,10 +140,12 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
                 data->send = true;
                 lastTime = data->last_t + t_p + t_c;
 
+                #pragma ivdep
                 for (int i = start; i < end; ++i) {
                     v = E[i];
                     start2 = V[v];
                     end2 = V[v + 1];
+                    #pragma ivdep
                     for (int j = start2; j < end2; ++j) {
                         if (E[j] == tid) {
                             M[j] = lastTime;
