@@ -218,9 +218,9 @@ int main(int argc, char* argv[]) {
     std::cin >> N;
 
     // N+1 - space for one extra element at the end (for easiest iteration through graph)
-    checkMemAlloc(posix_memalign((void**)V, 64, (N+1) * sizeof(int)));
+    checkMemAlloc(posix_memalign((void**)&V, 64, (N+1) * sizeof(int)));
 
-    checkMemAlloc(posix_memalign((void**)Vdata, 64, N * sizeof(NodeData)));
+    checkMemAlloc(posix_memalign((void**)&Vdata, 64, N * sizeof(NodeData)));
 
     for (int i = 0; i < N; ++i) {
         std::cin >> v_h >> G_0 >> G_max >> v_d;
@@ -239,7 +239,7 @@ int main(int argc, char* argv[]) {
     checkMemAlloc(posix_memalign((void**)&E, 64, Elen * sizeof(int)));
 
 //    M = (int*) calloc(Elen, sizeof(int));	// zero-initialized
-    checkMemAlloc(posix_memalign((void**)M, 64, Elen * sizeof(int)));
+    checkMemAlloc(posix_memalign((void**)&M, 64, Elen * sizeof(int)));
     for (int i = 0; i < Elen; ++i) {
         M[i] = 0;
     }
