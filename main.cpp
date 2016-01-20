@@ -279,7 +279,7 @@ int main(int argc, char* argv[]) {
 #endif
 
     // capture the start time
-    double start = elapsedTime();
+    double startTime = elapsedTime();
 
     for (int t = 1; t <= t_s; t += t_c + t_p) {
         #pragma offload target(mic) \
@@ -292,7 +292,7 @@ int main(int argc, char* argv[]) {
     }
 
     // capture the end time
-    double end = elapsedTime();
+    double endTime = elapsedTime();
 
 #ifdef _DEBUG
     std::cout << "M: ";
@@ -301,7 +301,7 @@ int main(int argc, char* argv[]) {
 #endif
 
     // write computing time (to cerr for simplicity)
-    std::cerr << std::fixed << (end - start) << std::endl;
+    std::cerr << std::fixed << (endTime - startTime) << std::endl;
 
     // generate output
     // 1. how many recipients
