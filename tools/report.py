@@ -131,7 +131,8 @@ if __name__ == "__main__":
     # params = {"test_id": "C3", "t": "128", "d": "0", "v": "4"}
     # params = {"test_id": "D3", "t": "128", "v": "4"}
     # params = {"test_id": "E3", "d": "0"}
-    params = {"test_id": "F3", "v": "4"}
+    # params = {"test_id": "F3", "v": "4"}
+    params = {"test_id": "G1", "d": "0"}
 
     path = OUTPUT_PATH
     generate_csv(path, params, column_id)

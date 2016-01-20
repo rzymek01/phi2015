@@ -6,7 +6,7 @@ print os.getcwd()
 
 OUTPUT_PATH = "/macierz/home/137396rm/cuda/msg-pass-sim-tests/"
 INPUT_PATH = "/macierz/home/137396rm/cuda/msg-pass-sim-tests/"
-PROGRAM_PATH = "/macierz/home/137396rm/cuda/msg-pass-sim/Release/msg"
+PROGRAM_PATH = "/macierz/home/137396rm/phi/msg"
 
 
 def execute(specs_id, v, t, d, test):
@@ -126,14 +126,24 @@ if __name__ == "__main__":
         #         "test": ('100', '1000', '100b', '1000b', '10000b', '100000b', '1000000b')
         #     }
         # },
-        "F": {
-            "id": "F3",
-            "name": "Test F. Execution time vs size of input data, number of threads per block and device",
+        # "F": {
+        #     "id": "F3",
+        #     "name": "Test F. Execution time vs size of input data, number of threads per block and device",
+        #     "cmd": {
+        #         "t": (64, 128, 256, 512, 1024),
+        #         "d": (0, 1),
+        #         "v": (most_optimized_version,),
+        #         "test": ('100', '1000', '100b', '1000b', '10000b', '100000b', '1000000b')
+        #     }
+        # },
+        "G": {
+            "id": "G1",
+            "name": "Test G. Execution time vs size of input data and number of threads",
             "cmd": {
-                "t": (64, 128, 256, 512, 1024),
-                "d": (0, 1),
-                "v": (most_optimized_version,),
-                "test": ('100', '1000', '100b', '1000b', '10000b', '100000b', '1000000b')
+                "t": (60, 120, 240, 300, 360, 420, 480, 720, 960),
+                "d": (0,),
+                "v": (0, 1),
+                "test": ('10', '100', '10b', '100b')
             }
         },
     }
