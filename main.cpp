@@ -289,7 +289,7 @@ int main(int argc, char* argv[]) {
     double startTime = elapsedTime();
 
     #pragma offload target(mic) \
-            in(N, t_c, t_p, threads ALLOC RETAIN) \
+            in(N, t_c, t_p, threads: ALLOC RETAIN) \
             in(V:length(N+1) ALLOC RETAIN) \
             in(E:length(Elen) ALLOC RETAIN) \
             in(Vdata:length(N) ALLOC RETAIN) \
@@ -300,7 +300,7 @@ int main(int argc, char* argv[]) {
 
     for (int t = 1 + t_c + t_p; t < t_s; t += t_c + t_p) {
         #pragma offload target(mic) \
-            nocopy(N, t_c, t_p, threads REUSE RETAIN) \
+            nocopy(N, t_c, t_p, threads: REUSE RETAIN) \
             nocopy(V:length(N+1) REUSE RETAIN) \
             nocopy(E:length(Elen) REUSE RETAIN) \
             nocopy(Vdata:length(N) REUSE RETAIN) \
@@ -311,11 +311,11 @@ int main(int argc, char* argv[]) {
     }
 
     #pragma offload target(mic) \
-            nocopy(N, t_c, t_p, threads REUSE FREE) \
+            nocopy(N, t_c, t_p, threads: REUSE FREE) \
             nocopy(V:length(N+1) REUSE FREE) \
             nocopy(E:length(Elen) REUSE FREE) \
             nocopy(Vdata:length(N) REUSE FREE) \
-            inout(M:length(Elen) REUSE FREE)
+            out(M:length(Elen) REUSE FREE)
     {
         recv(N, V, Vdata, Elen, E, M, t_c, t_p, threads);
     }
