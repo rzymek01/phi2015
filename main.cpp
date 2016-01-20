@@ -23,8 +23,10 @@
 #include <sys/time.h>
 
 //#define _DEBUG
-
-static void HandleError() { }
+#define ALLOC alloc_if(1)
+#define REUSE alloc_if(0)
+#define FREE free_if(1)
+#define RETAIN free_if(0)
 
 extern double elapsedTime(void) {
     struct timeval t;
@@ -281,14 +283,36 @@ int main(int argc, char* argv[]) {
     // capture the start time
     double startTime = elapsedTime();
 
-    for (int t = 1; t <= t_s; t += t_c + t_p) {
+    #pragma offload target(mic) \
+            in(N, t_c, t_p, threads ALLOC RETAIN) \
+            in(V:length(N+1) ALLOC RETAIN) \
+            in(E:length(Elen) ALLOC RETAIN) \
+            in(Vdata:length(N) ALLOC RETAIN) \
+            in(M:length(Elen) ALLOC RETAIN)
+    {
+        recv(N, V, Vdata, Elen, E, M, t_c, t_p, threads);
+    }
+
+    for (int t = 1 + t_c + t_p; t < t_s; t += t_c + t_p) {
         #pragma offload target(mic) \
-            in(N, t_c, t_p, threads) \
-            in(V:length(N+1)) in(E:length(Elen)) \
-            inout(Vdata:length(N)) inout(M:length(Elen))
+            nocopy(N, t_c, t_p, threads REUSE RETAIN) \
+            nocopy(V:length(N+1) REUSE RETAIN) \
+            nocopy(E:length(Elen) REUSE RETAIN) \
+            nocopy(Vdata:length(N) REUSE RETAIN) \
+            nocopy(M:length(Elen) REUSE RETAIN)
         {
             recv(N, V, Vdata, Elen, E, M, t_c, t_p, threads);
         }
+    }
+
+    #pragma offload target(mic) \
+            nocopy(N, t_c, t_p, threads REUSE FREE) \
+            nocopy(V:length(N+1) REUSE FREE) \
+            nocopy(E:length(Elen) REUSE FREE) \
+            nocopy(Vdata:length(N) REUSE FREE) \
+            inout(M:length(Elen) REUSE FREE)
+    {
+        recv(N, V, Vdata, Elen, E, M, t_c, t_p, threads);
     }
 
     // capture the end time
