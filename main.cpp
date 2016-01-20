@@ -146,6 +146,11 @@ __attribute__((target(mic))) void recv(const int N, const int *V, NodeData *Vdat
     } // end of pragma
 }
 
+// those must be globals due to nocopy
+int threads;
+int N;
+int t_c;
+int t_p;
 
 int main(int argc, char* argv[]) {
 
@@ -158,8 +163,8 @@ int main(int argc, char* argv[]) {
     }
 
     // read parameters
-    int threads = -1,
-        deviceId = -1;
+    threads = -1;
+    int deviceId = -1;
 
     if (argc >= 2) {
         threads = atoi(argv[1]);
@@ -181,12 +186,12 @@ int main(int argc, char* argv[]) {
     }
 
     // read input data
-    int N,				// no. of vertices (nodes)
-        Elen,			// no. of edges
+    //int N;				// no. of vertices (nodes)
+    int Elen,			// no. of edges
         Vsrc;			// source vertex
-    int t_c = 3,		// communication time [s]
-        t_p = 30,		// processing time [s] e.g. short movie
-        t_s = 330;		// max. simulation time [s]
+    //int t_c = 3,		// communication time [s]
+    //    t_p = 30,		// processing time [s] e.g. short movie
+    int t_s = 330;		// max. simulation time [s]
     float v_h = 0,		// reflection potential [-1; 1]
         G_0 = 1,		// initial conductivity [0, G_max)
         G_max = 100,	// max. conductivity (G_0, +inf)
